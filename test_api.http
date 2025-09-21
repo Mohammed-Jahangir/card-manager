@@ -1,0 +1,12 @@
+### Get all cards
+GET http://127.0.0.1:5000/cards
+
+### Add a new card
+POST http://127.0.0.1:5000/cards
+Content-Type: application/json
+
+{
+    "name": "HDFC Credit Card",
+    "type": "credit",
+    "limit": 100000
+}
