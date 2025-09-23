@@ -1,12 +1,37 @@
-### Get all cards
-GET http://127.0.0.1:5000/cards
+from flask import Flask, jsonify, request
+from datetime import datetime
 
-### Add a new card
-POST http://127.0.0.1:5000/cards
-Content-Type: application/json
+# 1️⃣ Create the Flask app first
+app = Flask(__name__)
 
-{
-    "name": "HDFC Credit Card",
-    "type": "credit",
-    "limit": 100000
-}
+# 2️⃣ Temporary storage for cards
+cards = []
+
+# 3️⃣ Home route
+@app.route("/")
+def home():
+    return "✅ Card Manager API is running!"
+
+# 4️⃣ /cards route with GET and POST
+@app.route("/cards", methods=["GET", "POST"])
+def manage_cards():
+    if request.method == "POST":
+        data = request.get_json()
+
+        # Validation
+        required_fields = ["bank", "name", "type", "limit", "interest_rate", "due_date", "rewards"]
+        missing_fields = [field for field in required_fields if field not in data]
+        if missing_fields:
+            return jsonify({"error": f"Missing fields: {', '.join(missing_fields)}"}), 400
+
+        # Add timestamp
+        data["created_at"] = datetime.now().isoformat()
+
+        cards.append(data)
+        return jsonify({"message": "Card added successfully", "cards": cards}), 201
+
+    return jsonify(cards)
+
+# 5️⃣ Start the Flask server
+if __name__ == "__main__":
+    app.run(debug=True)
